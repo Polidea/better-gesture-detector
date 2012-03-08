@@ -1,6 +1,7 @@
 package pl.polidea.gesturedetector;
 
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 
 // TODO: Auto-generated Javadoc
@@ -24,28 +25,60 @@ public class BetterGestureDetector {
 
         /**
          * On show press.
+         * 
+         * @param motionEvent
+         *            the motion event
          */
-        void onShowPress(MotionEvent motionEvent);
+        void onPress(MotionEvent motionEvent);
 
         /**
          * On single tap up.
+         * 
+         * @param motionEvent
+         *            the motion event
          */
-        void onSingleTapUp(MotionEvent motionEvent);
+        void onTap(MotionEvent motionEvent);
 
         /**
          * On drag.
+         * 
+         * @param motionEvent
+         *            the motion event
          */
         void onDrag(MotionEvent motionEvent);
 
         /**
          * On move.
+         * 
+         * @param motionEvent
+         *            the motion event
          */
         void onMove(MotionEvent motionEvent);
 
         /**
          * On release.
+         * 
+         * @param motionEvent
+         *            the motion event
          */
         void onRelease(MotionEvent motionEvent);
+
+        /**
+         * On long press.
+         * 
+         * @param motionEvent
+         *            the motion event
+         */
+        void onLongPress(MotionEvent motionEvent);
+
+        /**
+         * On double tap.
+         * 
+         * @param motionEvent
+         *            the motion event
+         * @param clicks
+         */
+        void onMultiTap(MotionEvent motionEvent, int clicks);
     }
 
     /**
@@ -61,7 +94,7 @@ public class BetterGestureDetector {
          * ()
          */
         @Override
-        public void onShowPress(MotionEvent motionEvent) {
+        public void onPress(MotionEvent motionEvent) {
             // TODO Auto-generated method stub
 
         }
@@ -74,7 +107,7 @@ public class BetterGestureDetector {
          * ()
          */
         @Override
-        public void onSingleTapUp(MotionEvent motionEvent) {
+        public void onTap(MotionEvent motionEvent) {
             // TODO Auto-generated method stub
 
         }
@@ -112,6 +145,25 @@ public class BetterGestureDetector {
          */
         @Override
         public void onRelease(MotionEvent motionEvent) {
+            // TODO Auto-generated method stub
+
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * pl.polidea.gesturedetector.BetterGestureDetector.BetterGestureListener
+         * #onLongPress(android.view.MotionEvent)
+         */
+        @Override
+        public void onLongPress(MotionEvent motionEvent) {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void onMultiTap(MotionEvent motionEvent, int clicks) {
             // TODO Auto-generated method stub
 
         }
@@ -157,11 +209,24 @@ public class BetterGestureDetector {
     /** The prev touch x. */
     private float prevTouchX;
 
+    /** The vertical move cancel. */
+    boolean verticalMoveCancel = true;
+
+    /** The horizontal move cancel. */
+    boolean horizontalMoveCancel = true;
     /** The dragging. */
     private boolean dragging;
 
     /** The moving. */
     private boolean moving;
+
+    /** The long press handler. */
+    private Runnable longPressHandler;
+
+    /** The long press timeout. */
+    private long longPressTimeout = 500;
+
+    private int clicks = 0;
 
     /**
      * Instantiates a new better gesture detector.
@@ -187,22 +252,41 @@ public class BetterGestureDetector {
         float dx = motionEvent.getX() - prevTouchX;
         float dy = motionEvent.getY() - prevTouchY;
         long dt = System.currentTimeMillis() - prevTouchTime;
-        handler.removeCallbacks(tapHandler);
-        tapHandler = null;
+        handler.removeCallbacks(longPressHandler);
+        longPressHandler = null;
 
         switch (motionEvent.getAction()) {
         case MotionEvent.ACTION_DOWN:
             dragging = false;
             moving = false;
+            if (tapHandler != null) {
+                clicks++;
+                Log.e("clicks", "" + clicks);
+                handler.removeCallbacks(tapHandler);
+                tapHandler = null;
+            }
+
+            handler.removeCallbacks(pressHandler);
             pressHandler = new Runnable() {
 
                 @Override
                 public void run() {
-                    onShowPress(motionEvent);
+                    // handler.removeCallbacks(tapHandler);
+                    // tapHandler = null;
+                    onPress(motionEvent);
                 }
 
             };
             handler.postDelayed(pressHandler, pressTimeout);
+
+            longPressHandler = new Runnable() {
+
+                @Override
+                public void run() {
+                    onLongPress(motionEvent);
+                }
+            };
+            handler.postDelayed(longPressHandler, getLongPressTimeout());
             prevTouchTime += dt;
             break;
         case MotionEvent.ACTION_UP:
@@ -211,26 +295,17 @@ public class BetterGestureDetector {
                 break;
             }
 
-            if (pressHandler != null) {
-                tapHandler = new Runnable() {
+            tapHandler = new Runnable() {
 
-                    @Override
-                    public void run() {
-                        onSingleTapUp(motionEvent);
-                    }
-                };
-                handler.postDelayed(tapHandler, tapTimeout - dt);
-            } else {
-                onShowPress(motionEvent);
-                tapHandler = new Runnable() {
+                @Override
+                public void run() {
+                    handler.removeCallbacks(longPressHandler);
+                    longPressHandler = null;
+                    onTap(motionEvent, clicks);
+                }
+            };
+            handler.postDelayed(tapHandler, tapTimeout - dt);
 
-                    @Override
-                    public void run() {
-                        onSingleTapUp(motionEvent);
-                    }
-                };
-                handler.postDelayed(tapHandler, tapTimeout - pressTimeout);
-            }
             prevTouchTime += dt;
             break;
 
@@ -239,8 +314,12 @@ public class BetterGestureDetector {
                 if (pressHandler == null && !moving) {
                     dragging = true;
                 }
+                handler.removeCallbacks(tapHandler);
+                tapHandler = null;
                 handler.removeCallbacks(pressHandler);
                 pressHandler = null;
+                handler.removeCallbacks(longPressHandler);
+                longPressHandler = null;
                 moving = true;
                 if (dragging) {
                     onDrag(motionEvent);
@@ -248,7 +327,15 @@ public class BetterGestureDetector {
                     onMove(motionEvent);
                 }
             }
-
+            break;
+        case MotionEvent.ACTION_CANCEL:
+            handler.removeCallbacks(pressHandler);
+            pressHandler = null;
+            handler.removeCallbacks(tapHandler);
+            tapHandler = null;
+            handler.removeCallbacks(longPressHandler);
+            longPressHandler = null;
+            onRelease(motionEvent);
         }
         prevTouchX = motionEvent.getX();
         prevTouchY = motionEvent.getY();
@@ -256,39 +343,81 @@ public class BetterGestureDetector {
 
     /**
      * On release.
+     * 
+     * @param motionEvent
+     *            the motion event
      */
     private void onRelease(MotionEvent motionEvent) {
+        Log.e("gesture", "release");
+        clicks = 0;
         listener.onRelease(motionEvent);
     }
 
     /**
      * On drag.
+     * 
+     * @param motionEvent
+     *            the motion event
      */
     private void onDrag(MotionEvent motionEvent) {
+        Log.e("gesture", "drag");
+        clicks = 0;
         listener.onDrag(motionEvent);
     }
 
     /**
      * On move.
+     * 
+     * @param motionEvent
+     *            the motion event
      */
     private void onMove(MotionEvent motionEvent) {
+        Log.e("gesture", "move");
+        clicks = 0;
         listener.onMove(motionEvent);
     }
 
     /**
      * On single tap up.
+     * 
+     * @param motionEvent
+     *            the motion event
      */
-    protected void onSingleTapUp(MotionEvent motionEvent) {
+    protected void onTap(MotionEvent motionEvent, int clicks) {
         tapHandler = null;
-        listener.onSingleTapUp(motionEvent);
+        if (clicks == 0) {
+            Log.e("gesture", "tap");
+            listener.onTap(motionEvent);
+        } else {
+            Log.e("gesture", "multitap");
+            listener.onMultiTap(motionEvent, clicks + 1);
+        }
+        this.clicks = 0;
+    }
+
+    /**
+     * On long press.
+     * 
+     * @param motionEvent
+     *            the motion event
+     */
+    protected void onLongPress(MotionEvent motionEvent) {
+        Log.e("gesture", "longpress");
+        clicks = 0;
+        longPressHandler = null;
+        listener.onLongPress(motionEvent);
     }
 
     /**
      * On show press.
+     * 
+     * @param motionEvent
+     *            the motion event
      */
-    protected void onShowPress(MotionEvent motionEvent) {
+    protected void onPress(MotionEvent motionEvent) {
+        Log.e("gesture", "press");
         pressHandler = null;
-        listener.onShowPress(motionEvent);
+        listener.onPress(motionEvent);
     }
 
     /**
@@ -346,5 +475,24 @@ public class BetterGestureDetector {
      */
     public void setMoveEpsilon(int moveEpsilon) {
         this.moveEpsilon = moveEpsilon;
+    }
+
+    /**
+     * Gets the long press timeout.
+     * 
+     * @return the long press timeout
+     */
+    public long getLongPressTimeout() {
+        return longPressTimeout;
+    }
+
+    /**
+     * Sets the long press timeout.
+     * 
+     * @param longPressTimeout
+     *            the new long press timeout
+     */
+    public void setLongPressTimeout(long longPressTimeout) {
+        this.longPressTimeout = longPressTimeout;
     }
 }

@@ -27,14 +27,14 @@ public class BetterGestureDetectorActivity extends Activity implements BetterGes
     }
 
     @Override
-    public void onShowPress(MotionEvent motionEvent) {
+    public void onPress(MotionEvent motionEvent) {
         v.setText("press");
         v.setBackgroundColor(0xffff0000);
         v.invalidate();
     }
 
     @Override
-    public void onSingleTapUp(MotionEvent motionEvent) {
+    public void onTap(MotionEvent motionEvent) {
         v.setText("tap");
         v.setBackgroundColor(0xff00ff00);
         v.invalidate();
@@ -58,6 +58,20 @@ public class BetterGestureDetectorActivity extends Activity implements BetterGes
     public void onRelease(MotionEvent motionEvent) {
         v.setText("release");
         v.setBackgroundColor(0xffffff00);
+        v.invalidate();
+    }
+
+    @Override
+    public void onLongPress(MotionEvent motionEvent) {
+        v.setText("longpress");
+        v.setBackgroundColor(0xff00ffff);
+        v.invalidate();
+    }
+
+    @Override
+    public void onMultiTap(MotionEvent motionEvent, int clicks) {
+        v.setText("multitap [" + clicks + "]");
+        v.setBackgroundColor(0xff7f7f7f);
         v.invalidate();
     }
 }
