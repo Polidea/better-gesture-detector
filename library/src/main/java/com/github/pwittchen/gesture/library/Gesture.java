@@ -101,7 +101,6 @@ public class Gesture {
     }
 
     tapHandler = new Runnable() {
-
       @Override public void run() {
         handler.removeCallbacks(longPressHandler);
         longPressHandler = null;
