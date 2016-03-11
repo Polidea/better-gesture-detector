@@ -2,6 +2,7 @@ package com.github.pwittchen.gesture.library;
 
 import android.os.Handler;
 import android.view.MotionEvent;
+import rx.Observable;
 
 public class Gesture {
   private static final int DEFAULT_PRESS_TIMEOUT = 100;
@@ -177,7 +178,10 @@ public class Gesture {
     listener.onPress(motionEvent);
   }
 
-  //TODO: create Observable
+  //TODO: implement
+  public Observable<GestureEvent> observe() {
+    return Observable.create(null);
+  }
 
   //TODO: implement methods in listener
   private GestureListener createReactiveListener() {
