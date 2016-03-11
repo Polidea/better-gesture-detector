@@ -1,11 +1,11 @@
-package pl.polidea.gesturedetector;
+package com.github.pwittchen.gesture.app;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.widget.TextView;
-import pl.polidea.gesturedetector.library.Gesture;
-import pl.polidea.gesturedetector.library.GestureCallbacks;
+import com.github.pwittchen.gesture.library.Gesture;
+import com.github.pwittchen.gesture.library.GestureCallbacks;
 import pl.polidea.test.R;
 
 public class GestureActivity extends Activity implements GestureCallbacks {

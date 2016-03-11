@@ -11,7 +11,7 @@
         android:label="@string/app_name" >
         <activity
             android:label="@string/app_name"
-            android:name="pl.polidea.gesturedetector.GestureActivity" android:configChanges="orientation">
+            android:name="com.github.pwittchen.gesture.app.GestureActivity" android:configChanges="orientation">
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
 

@@ -1,4 +1,4 @@
-package pl.polidea.gesturedetector.library;
+package com.github.pwittchen.gesture.library;
 
 import android.view.MotionEvent;
 
