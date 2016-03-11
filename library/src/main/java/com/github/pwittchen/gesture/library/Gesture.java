@@ -31,6 +31,7 @@ public class Gesture {
 
   public Gesture() {
     this.handler = new Handler();
+    this.listener = createReactiveListener();
   }
 
   public void addListener(GestureListener listener) {
@@ -174,6 +175,41 @@ public class Gesture {
   private void onPress(MotionEvent motionEvent) {
     pressHandler = null;
     listener.onPress(motionEvent);
+  }
+
+  //TODO: create Observable
+
+  //TODO: implement methods in listener
+  private GestureListener createReactiveListener() {
+    return new GestureListener() {
+      @Override public void onPress(MotionEvent motionEvent) {
+
+      }
+
+      @Override public void onTap(MotionEvent motionEvent) {
+
+      }
+
+      @Override public void onDrag(MotionEvent motionEvent) {
+
+      }
+
+      @Override public void onMove(MotionEvent motionEvent) {
+
+      }
+
+      @Override public void onRelease(MotionEvent motionEvent) {
+
+      }
+
+      @Override public void onLongPress(MotionEvent motionEvent) {
+
+      }
+
+      @Override public void onMultiTap(MotionEvent motionEvent, int clicks) {
+
+      }
+    };
   }
 
   public int getPressTimeout() {
