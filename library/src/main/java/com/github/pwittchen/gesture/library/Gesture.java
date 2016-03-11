@@ -41,6 +41,15 @@ public class Gesture {
     this.listener = listener;
   }
 
+  public Observable<GestureEvent> observe() {
+    this.listener = createReactiveListener();
+    return Observable.create(new Observable.OnSubscribe<GestureEvent>() {
+      @Override public void call(final Subscriber<? super GestureEvent> subscriber) {
+        Gesture.this.subscriber = subscriber;
+      }
+    });
+  }
+
   public void dispatchTouchEvent(final MotionEvent motionEvent) {
     checkNotNull(motionEvent, "motionEvent == null");
 
@@ -183,15 +192,6 @@ public class Gesture {
   private void onPress(MotionEvent motionEvent) {
     pressHandler = null;
     listener.onPress(motionEvent);
-  }
-
-  public Observable<GestureEvent> observe() {
-    this.listener = createReactiveListener();
-    return Observable.create(new Observable.OnSubscribe<GestureEvent>() {
-      @Override public void call(final Subscriber<? super GestureEvent> subscriber) {
-        Gesture.this.subscriber = subscriber;
-      }
-    });
   }
 
   private GestureListener createReactiveListener() {

@@ -1,13 +1,16 @@
 package com.github.pwittchen.gesture.app;
 
-import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.widget.TextView;
 import com.github.pwittchen.gesture.library.Gesture;
 import com.github.pwittchen.gesture.library.GestureListener;
 
-public class GestureActivity extends Activity {
+public class GestureActivity extends AppCompatActivity {
   private Gesture gesture;
   private TextView textView;
 
@@ -47,8 +50,8 @@ public class GestureActivity extends Activity {
     });
   }
 
-  private void setEventText(String press, int color) {
-    textView.setText(press);
+  private void setEventText(String message, int color) {
+    textView.setText(message);
     textView.setBackgroundColor(color);
     textView.invalidate();
   }
@@ -56,5 +59,22 @@ public class GestureActivity extends Activity {
   @Override public boolean dispatchTouchEvent(MotionEvent event) {
     gesture.dispatchTouchEvent(event);
     return super.dispatchTouchEvent(event);
+  }
+
+  @Override public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.main_menu, menu);
+    return true;
+  }
+
+  @Override public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+      case R.id.listener:
+        break;
+      case R.id.rx:
+        final Intent intent = new Intent(this, GestureRxActivity.class);
+        startActivity(intent);
+        break;
+    }
+    return true;
   }
 }
