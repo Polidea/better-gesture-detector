@@ -3,6 +3,7 @@ package com.github.pwittchen.gesture.library;
 import android.os.Handler;
 import android.view.MotionEvent;
 import rx.Observable;
+import rx.Subscriber;
 
 public class Gesture {
   private static final int DEFAULT_PRESS_TIMEOUT = 100;
@@ -29,21 +30,20 @@ public class Gesture {
 
   private Handler handler;
   private GestureListener listener;
+  private Subscriber<? super GestureEvent> subscriber;
 
   public Gesture() {
     this.handler = new Handler();
-    this.listener = createReactiveListener();
   }
 
   public void addListener(GestureListener listener) {
-    if (listener == null) {
-      throw new NullPointerException("listener == null");
-    }
-
+    checkNotNull(listener, "listener == null");
     this.listener = listener;
   }
 
   public void dispatchTouchEvent(final MotionEvent motionEvent) {
+    checkNotNull(motionEvent, "motionEvent == null");
+
     float dx = motionEvent.getX() - prevTouchX;
     float dy = motionEvent.getY() - prevTouchY;
     long dt = System.currentTimeMillis() - prevTouchTime;
@@ -84,6 +84,7 @@ public class Gesture {
       if (pressHandler == null && !moving) {
         dragging = true;
       }
+
       handler.removeCallbacks(tapHandler);
       tapHandler = null;
       handler.removeCallbacks(pressHandler);
@@ -91,6 +92,7 @@ public class Gesture {
       handler.removeCallbacks(longPressHandler);
       longPressHandler = null;
       moving = true;
+
       if (dragging) {
         onDrag(motionEvent);
       } else {
@@ -112,6 +114,7 @@ public class Gesture {
         onTap(motionEvent, clicks);
       }
     };
+
     handler.postDelayed(tapHandler, tapTimeout - dt);
     prevTouchTime += dt;
   }
@@ -119,6 +122,7 @@ public class Gesture {
   private void onActionDown(final MotionEvent motionEvent, long dt) {
     dragging = false;
     moving = false;
+
     if (tapHandler != null) {
       clicks++;
       handler.removeCallbacks(tapHandler);
@@ -126,11 +130,13 @@ public class Gesture {
     }
 
     handler.removeCallbacks(pressHandler);
+
     pressHandler = new Runnable() {
       @Override public void run() {
         onPress(motionEvent);
       }
     };
+
     handler.postDelayed(pressHandler, pressTimeout);
 
     longPressHandler = new Runnable() {
@@ -138,6 +144,7 @@ public class Gesture {
         onLongPress(motionEvent);
       }
     };
+
     handler.postDelayed(longPressHandler, longPressTimeout);
     prevTouchTime += dt;
   }
@@ -157,7 +164,7 @@ public class Gesture {
     listener.onMove(motionEvent);
   }
 
-  protected void onTap(MotionEvent motionEvent, int clicks) {
+  private void onTap(MotionEvent motionEvent, int clicks) {
     tapHandler = null;
     if (clicks == 0) {
       listener.onTap(motionEvent);
@@ -178,42 +185,51 @@ public class Gesture {
     listener.onPress(motionEvent);
   }
 
-  //TODO: implement
   public Observable<GestureEvent> observe() {
-    return Observable.create(null);
+    this.listener = createReactiveListener();
+    return Observable.create(new Observable.OnSubscribe<GestureEvent>() {
+      @Override public void call(final Subscriber<? super GestureEvent> subscriber) {
+        Gesture.this.subscriber = subscriber;
+      }
+    });
   }
 
-  //TODO: implement methods in listener
   private GestureListener createReactiveListener() {
     return new GestureListener() {
       @Override public void onPress(MotionEvent motionEvent) {
-
+        onNextSafely(GestureEvent.ON_PRESS);
       }
 
       @Override public void onTap(MotionEvent motionEvent) {
-
+        onNextSafely(GestureEvent.ON_TAP);
       }
 
       @Override public void onDrag(MotionEvent motionEvent) {
-
+        onNextSafely(GestureEvent.ON_DRAG);
       }
 
       @Override public void onMove(MotionEvent motionEvent) {
-
+        onNextSafely(GestureEvent.ON_MOVE);
       }
 
       @Override public void onRelease(MotionEvent motionEvent) {
-
+        onNextSafely(GestureEvent.ON_RELEASE);
       }
 
       @Override public void onLongPress(MotionEvent motionEvent) {
-
+        onNextSafely(GestureEvent.ON_LONG_PRESS);
       }
 
       @Override public void onMultiTap(MotionEvent motionEvent, int clicks) {
-
+        onNextSafely(GestureEvent.ON_MULTI_TAP.withClicks(clicks));
       }
     };
+  }
+
+  private void onNextSafely(final GestureEvent gestureEvent) {
+    if (subscriber != null) {
+      subscriber.onNext(gestureEvent);
+    }
   }
 
   public int getPressTimeout() {
@@ -246,5 +262,11 @@ public class Gesture {
 
   public void setLongPressTimeout(long longPressTimeout) {
     this.longPressTimeout = longPressTimeout;
+  }
+
+  private void checkNotNull(Object object, String message) {
+    if (object == null) {
+      throw new IllegalArgumentException(message);
+    }
   }
 }

@@ -7,7 +7,7 @@ public enum GestureEvent {
   ON_MOVE,
   ON_RELEASE,
   ON_LONG_PRESS,
-  ON_MULTITAP;
+  ON_MULTI_TAP;
 
   private int clicks = 1;
 
@@ -15,7 +15,8 @@ public enum GestureEvent {
     return clicks;
   }
 
-  public void setClicks(int clicks) {
+  public GestureEvent withClicks(int clicks) {
     this.clicks = clicks;
+    return this;
   }
 }

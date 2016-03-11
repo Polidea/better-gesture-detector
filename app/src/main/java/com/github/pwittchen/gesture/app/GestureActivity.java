@@ -53,8 +53,8 @@ public class GestureActivity extends Activity {
     textView.invalidate();
   }
 
-  @Override public boolean dispatchTouchEvent(MotionEvent ev) {
-    gesture.dispatchTouchEvent(ev);
-    return super.dispatchTouchEvent(ev);
+  @Override public boolean dispatchTouchEvent(MotionEvent event) {
+    gesture.dispatchTouchEvent(event);
+    return super.dispatchTouchEvent(event);
   }
 }
