@@ -2,7 +2,7 @@ package pl.polidea.gesturedetector.library;
 
 import android.view.MotionEvent;
 
-public interface BetterGestureListener {
+public interface GestureCallbacks {
 
   void onPress(MotionEvent motionEvent);
 

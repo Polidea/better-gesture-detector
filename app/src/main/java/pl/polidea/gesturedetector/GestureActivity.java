@@ -4,12 +4,12 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.widget.TextView;
-import pl.polidea.gesturedetector.library.BetterGestureDetector;
-import pl.polidea.gesturedetector.library.BetterGestureListener;
+import pl.polidea.gesturedetector.library.Gesture;
+import pl.polidea.gesturedetector.library.GestureCallbacks;
 import pl.polidea.test.R;
 
-public class BetterGestureDetectorActivity extends Activity implements BetterGestureListener {
-    private BetterGestureDetector gestureDetector;
+public class GestureActivity extends Activity implements GestureCallbacks {
+    private Gesture gesture;
     private TextView textView;
 
     @Override
@@ -17,12 +17,12 @@ public class BetterGestureDetectorActivity extends Activity implements BetterGes
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         textView = (TextView) findViewById(R.id.textView);
-        gestureDetector = new BetterGestureDetector(this);
+        gesture = new Gesture(this);
     }
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        gestureDetector.onTouchEvent(ev);
+        gesture.dispatchTouchEvent(ev);
         return super.dispatchTouchEvent(ev);
     }
 

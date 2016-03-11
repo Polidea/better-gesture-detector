@@ -3,7 +3,7 @@ package pl.polidea.gesturedetector.library;
 import android.os.Handler;
 import android.view.MotionEvent;
 
-public class BetterGestureDetector {
+public class Gesture {
   private static final int DEFAULT_PRESS_TIMEOUT = 100;
   private static final int DEFAULT_TAP_TIMEOUT = 300;
   private static final int DEFAULT_MOVE_EPSILON = 4;
@@ -27,9 +27,9 @@ public class BetterGestureDetector {
   private int clicks = 0;
 
   private Handler handler;
-  private final BetterGestureListener listener;
+  private final GestureCallbacks listener;
 
-  public BetterGestureDetector(BetterGestureListener listener) {
+  public Gesture(GestureCallbacks listener) {
     if (listener == null) {
       throw new NullPointerException("listener == null");
     }
@@ -38,7 +38,7 @@ public class BetterGestureDetector {
     this.handler = new Handler();
   }
 
-  public void onTouchEvent(final MotionEvent motionEvent) {
+  public void dispatchTouchEvent(final MotionEvent motionEvent) {
     float dx = motionEvent.getX() - prevTouchX;
     float dy = motionEvent.getY() - prevTouchY;
     long dt = System.currentTimeMillis() - prevTouchTime;
