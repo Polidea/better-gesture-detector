@@ -27,15 +27,18 @@ public class Gesture {
   private int clicks = 0;
 
   private Handler handler;
-  private final GestureCallbacks listener;
+  private GestureListener listener;
 
-  public Gesture(GestureCallbacks listener) {
+  public Gesture() {
+    this.handler = new Handler();
+  }
+
+  public void addListener(GestureListener listener) {
     if (listener == null) {
       throw new NullPointerException("listener == null");
     }
 
     this.listener = listener;
-    this.handler = new Handler();
   }
 
   public void dispatchTouchEvent(final MotionEvent motionEvent) {

@@ -5,7 +5,7 @@ android {
     buildToolsVersion "23.0.2"
 
     defaultConfig {
-        applicationId "pl.polidea.test"
+        applicationId "com.github.pwittchen.gesture.app"
         minSdkVersion 8
         targetSdkVersion 15
     }

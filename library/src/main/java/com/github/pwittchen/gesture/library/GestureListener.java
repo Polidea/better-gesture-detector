@@ -2,7 +2,7 @@ package com.github.pwittchen.gesture.library;
 
 import android.view.MotionEvent;
 
-public interface GestureCallbacks {
+public interface GestureListener {
 
   void onPress(MotionEvent motionEvent);
 
