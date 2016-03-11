@@ -261,7 +261,7 @@ public class BetterGestureDetector {
             moving = false;
             if (tapHandler != null) {
                 clicks++;
-                Log.e("clicks", "" + clicks);
+                Log.d("clicks", "" + clicks);
                 handler.removeCallbacks(tapHandler);
                 tapHandler = null;
             }
@@ -348,7 +348,7 @@ public class BetterGestureDetector {
      *            the motion event
      */
     private void onRelease(MotionEvent motionEvent) {
-        Log.e("gesture", "release");
+        Log.d("gesture", "release");
         clicks = 0;
         listener.onRelease(motionEvent);
     }
@@ -360,7 +360,7 @@ public class BetterGestureDetector {
      *            the motion event
      */
     private void onDrag(MotionEvent motionEvent) {
-        Log.e("gesture", "drag");
+        Log.d("gesture", "drag");
         clicks = 0;
         listener.onDrag(motionEvent);
     }
@@ -372,7 +372,7 @@ public class BetterGestureDetector {
      *            the motion event
      */
     private void onMove(MotionEvent motionEvent) {
-        Log.e("gesture", "move");
+        Log.d("gesture", "move");
         clicks = 0;
         listener.onMove(motionEvent);
     }
@@ -386,10 +386,10 @@ public class BetterGestureDetector {
     protected void onTap(MotionEvent motionEvent, int clicks) {
         tapHandler = null;
         if (clicks == 0) {
-            Log.e("gesture", "tap");
+            Log.d("gesture", "tap");
             listener.onTap(motionEvent);
         } else {
-            Log.e("gesture", "multitap");
+            Log.d("gesture", "multitap");
             listener.onMultiTap(motionEvent, clicks + 1);
         }
         this.clicks = 0;
@@ -402,7 +402,7 @@ public class BetterGestureDetector {
      *            the motion event
      */
     protected void onLongPress(MotionEvent motionEvent) {
-        Log.e("gesture", "longpress");
+        Log.d("gesture", "longpress");
         clicks = 0;
         longPressHandler = null;
         listener.onLongPress(motionEvent);
@@ -415,7 +415,7 @@ public class BetterGestureDetector {
      *            the motion event
      */
     protected void onPress(MotionEvent motionEvent) {
-        Log.e("gesture", "press");
+        Log.d("gesture", "press");
         pressHandler = null;
         listener.onPress(motionEvent);
     }
