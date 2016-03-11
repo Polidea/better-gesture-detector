@@ -1,11 +1,12 @@
 package pl.polidea.gesturedetector;
 
-import pl.polidea.gesturedetector.BetterGestureDetector.BetterGestureListener;
-import pl.polidea.test.R;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.widget.TextView;
+import pl.polidea.gesturedetector.library.BetterGestureDetector;
+import pl.polidea.gesturedetector.library.BetterGestureListener;
+import pl.polidea.test.R;
 
 public class BetterGestureDetectorActivity extends Activity implements BetterGestureListener {
     private BetterGestureDetector gestureDetector;
