@@ -251,9 +251,7 @@ public class BetterGestureDetector {
     public void onTouchEvent(final MotionEvent motionEvent) {
         float dx = motionEvent.getX() - prevTouchX;
         float dy = motionEvent.getY() - prevTouchY;
-        long dt = System.currentTimeMillis() - prevTouchTime;
-        handler.removeCallbacks(longPressHandler);
-        longPressHandler = null;
+        long dt = System.currentTimeMillis() - prevTouchTime;        
 
         switch (motionEvent.getAction()) {
         case MotionEvent.ACTION_DOWN:
@@ -278,7 +276,7 @@ public class BetterGestureDetector {
 
             };
             handler.postDelayed(pressHandler, pressTimeout);
-
+            handler.removeCallbacks(longPressHandler);
             longPressHandler = new Runnable() {
 
                 @Override
